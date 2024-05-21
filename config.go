@@ -8,16 +8,6 @@ import (
 )
 
 type Config struct {
-	Global struct {
-		Port      int      `env:"PORT" envDefault:"8080"`
-		Blocklist []string `env:"BLOCKLIST" envSeparator:","`
-	}
-	Smtp struct {
-		User     string `env:"SMTP_USER"`
-		Password string `env:"SMTP_PASS"`
-		Host     string `env:"SMTP_HOST" envDefault:"localhost"`
-		Port     int    `env:"SMTP_PORT" envDefault:"1025"`
-	}
 	Api struct {
 		Akismet            string `env:"AKISMET_KEY"`
 		CloudFlare         string `env:"CLOUDFLARE_KEY"`
@@ -27,6 +17,16 @@ type Config struct {
 		Fields   FormFields
 		Template string
 		Id       string
+	}
+	Smtp struct {
+		User     string `env:"SMTP_USER"`
+		Password string `env:"SMTP_PASS"`
+		Host     string `env:"SMTP_HOST" envDefault:"localhost"`
+		Port     int    `env:"SMTP_PORT" envDefault:"1025"`
+	}
+	Global struct {
+		Blocklist []string `env:"BLOCKLIST" envSeparator:","`
+		Port      int      `env:"PORT" envDefault:"8080"`
 	}
 }
 
