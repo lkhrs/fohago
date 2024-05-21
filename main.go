@@ -2,17 +2,17 @@ package main
 
 import "log"
 
-var config *Config
+var Conf *Config
 
 func main() {
-	config = &Config{}
-	if err := loadFromToml(config, "./fohago.toml"); err != nil {
+	Conf = &Config{}
+	if err := loadFromToml(Conf, "./fohago.toml"); err != nil {
 		log.Fatal(err)
 	}
-	if err := loadFromEnv(config); err != nil {
+	if err := loadFromEnv(Conf); err != nil {
 		log.Fatal(err)
 	}
-	if err := config.check(); err != nil {
+	if err := Conf.check(); err != nil {
 		log.Fatal(err)
 	}
 }
