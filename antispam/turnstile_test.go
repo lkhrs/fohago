@@ -15,6 +15,7 @@ type testKey struct {
 	Fail string
 }
 
+// https://developers.cloudflare.com/turnstile/troubleshooting/testing/
 var keys = testKeys{
 	Secret: testKey{
 		Pass: "1x0000000000000000000000000000000AA",
