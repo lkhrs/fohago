@@ -1,4 +1,4 @@
-package fohago
+package main
 
 import "log"
 
