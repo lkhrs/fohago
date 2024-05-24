@@ -58,10 +58,13 @@ func Turnstile(secret string, token string) (bool, error) {
 		return false, err
 	}
 
-	// check for errors
-	if len(respData.ErrorCodes) > 0 {
-		errorMsg := strings.Join(respData.ErrorCodes, ", ")
-		return false, errors.New(errorMsg)
+	// handle validation failure
+	if !respData.Success {
+		if len(respData.ErrorCodes) > 0 {
+			errorMsg := strings.Join(respData.ErrorCodes, ", ")
+			return false, errors.New(errorMsg)
+		}
+		return false, errors.New("validation failed")
 	}
 	// only return true if the success field is true
 	if respData.Success {
