@@ -13,12 +13,8 @@ type Config struct {
 		CloudFlare         string `env:"CLOUDFLARE_KEY"`
 		GoogleSafeBrowsing string `env:"GOOGLE_KEY"`
 	}
-	Form struct {
-		Fields   FormFields
-		Template string
-		Id       string
-	}
-	Smtp struct {
+	Forms map[string]FormConfig
+	Smtp  struct {
 		User     string `env:"SMTP_USER"`
 		Password string `env:"SMTP_PASS"`
 		Host     string `env:"SMTP_HOST" envDefault:"localhost"`
@@ -28,6 +24,11 @@ type Config struct {
 		Blocklist []string `env:"BLOCKLIST" envSeparator:","`
 		Port      int      `env:"PORT" envDefault:"8080"`
 	}
+}
+
+type FormConfig struct {
+	Id     string
+	Fields FormFields
 }
 
 // check the config for required fields
