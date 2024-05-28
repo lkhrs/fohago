@@ -1,18 +1,29 @@
 package main
 
-import "log"
+import (
+	"log"
+	"net/http"
+	"strconv"
 
-var Conf *Config
+	"github.com/lkhrs/fohago/middleware"
+)
 
 func main() {
-	Conf = &Config{}
-	if err := loadFromToml(Conf, "./fohago.toml"); err != nil {
+	config, err := loadConfig()
+	if err != nil {
 		log.Fatal(err)
 	}
-	if err := loadFromEnv(Conf); err != nil {
-		log.Fatal(err)
-	}
-	if err := Conf.check(); err != nil {
-		log.Fatal(err)
-	}
+
+	mux := http.NewServeMux()
+	fh := NewFormHandler(config)
+
+	mux.HandleFunc("POST /{id}", fh.handleFormSubmission)
+	mux.HandleFunc("GET /test.html", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./test.html")
+	})
+
+	handler := middleware.Logging(mux)
+	handler = middleware.PanicRecovery(handler)
+
+	http.ListenAndServe(":"+strconv.Itoa(config.Global.Port), handler)
 }
