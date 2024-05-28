@@ -9,11 +9,11 @@ func TestConfigCheck(t *testing.T) {
 	// TODO: Test cases for Form struct
 	config := &Config{
 		Global: struct {
-			Port      int      `env:"PORT" envDefault:"8080"`
 			Blocklist []string `env:"BLOCKLIST" envSeparator:","`
+			Port      int      `env:"PORT" envDefault:"8080"`
 		}{
-			Port:      8080,
 			Blocklist: []string{"example.com", "test.com"},
+			Port:      8080,
 		},
 		Smtp: struct {
 			User     string `env:"SMTP_USER"`
@@ -28,11 +28,9 @@ func TestConfigCheck(t *testing.T) {
 		},
 		Api: struct {
 			Akismet            string `env:"AKISMET_KEY"`
-			CloudFlare         string `env:"CLOUDFLARE_KEY"`
 			GoogleSafeBrowsing string `env:"GOOGLE_KEY"`
 		}{
 			Akismet:            "akismetkey",
-			CloudFlare:         "cloudflarekey",
 			GoogleSafeBrowsing: "googlekey",
 		},
 	}
