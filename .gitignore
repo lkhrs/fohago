@@ -60,4 +60,5 @@ Temporary Items
 
 .env
 fohago.toml
-forms/
+forms/*
+!forms/default.html
