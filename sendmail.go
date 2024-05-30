@@ -40,10 +40,10 @@ func buildEmailMessage(sub FormSubmission) (message, error) {
 		return message{}, err
 	}
 
-	headers := "From: " + sub.FormCfg.Mail.Sender + "\r\n" +
-		"To: " + sub.FormCfg.Mail.Recipient + "\r\n" +
+	headers := "From: <" + sub.FormCfg.Mail.Sender + ">\r\n" +
+		"To: <" + sub.FormCfg.Mail.Recipient + ">\r\n" +
 		"Subject: " + sub.FormCfg.Mail.Subject + " - " + sub.Id + "\r\n" +
-		"Reply-To: " + sub.Fields[sub.FormCfg.Field.Email] + "\r\n" +
+		"Reply-To: <" + sub.Fields[sub.FormCfg.Field.Email] + ">\r\n" +
 		"MIME-version: 1.0;\r\nContent-Type: text/html; charset=\"UTF-8\";\r\n\r\n"
 
 	return message{
