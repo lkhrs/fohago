@@ -11,7 +11,7 @@ import (
 
 type Config struct {
 	Api struct {
-		Akismet            string `env:"AKISMET_KEY"`
+		Akismet string `env:"AKISMET_KEY"`
 	}
 	Forms map[string]FormConfig
 	Smtp  struct {
@@ -26,18 +26,18 @@ type Config struct {
 	}
 }
 
-type FormFields map[string]string
+type FormBody map[string]string
 
 type FormConfig struct {
-	Id     string     `toml:"id"`
-	Fields FormFields `toml:"fields"`
-	Mail   struct {
+	Id   string `toml:"id"`
+	Body FormBody
+	Mail struct {
 		Recipient string `toml:"recipient"`
 		Sender    string `toml:"sender"`
 		Subject   string `toml:"subject"`
 	} `toml:"mail"`
 	TurnstileKey string `toml:"turnstile_key"`
-	Field        struct {
+	Fields       struct {
 		Name     string `toml:"name"`
 		Email    string `toml:"email"`
 		Message  string `toml:"message"`

@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/microcosm-cc/bluemonday"
 	"log"
 	"net/http"
+
+	"github.com/microcosm-cc/bluemonday"
 )
 
 type FormHandler struct {
@@ -13,7 +14,7 @@ type FormHandler struct {
 
 type FormSubmission struct {
 	Id      string
-	Fields  FormFields
+	Body    FormBody
 	FormCfg FormConfig
 }
 
@@ -48,7 +49,7 @@ func (fh *FormHandler) process(w http.ResponseWriter, r *http.Request) FormSubmi
 		http.Error(w, "Failed to parse form", http.StatusInternalServerError)
 	}
 
-	fields := make(FormFields)
+	fields := make(FormBody)
 	p := bluemonday.StrictPolicy()
 	for k, v := range r.Form {
 		fields[k] = p.Sanitize(v[0])
@@ -56,7 +57,7 @@ func (fh *FormHandler) process(w http.ResponseWriter, r *http.Request) FormSubmi
 
 	submission := FormSubmission{
 		Id:      id,
-		Fields:  fields,
+		Body:    fields,
 		FormCfg: formCfg,
 	}
 

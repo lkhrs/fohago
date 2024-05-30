@@ -36,14 +36,14 @@ func buildEmailMessage(sub FormSubmission) (message, error) {
 	tmpl := loadTemplate(sub.Id)
 
 	var body bytes.Buffer
-	if err := tmpl.ExecuteTemplate(&body, sub.Id+".html", sub.Fields); err != nil {
+	if err := tmpl.ExecuteTemplate(&body, sub.Id+".html", sub.Body); err != nil {
 		return message{}, err
 	}
 
 	headers := "From: <" + sub.FormCfg.Mail.Sender + ">\r\n" +
 		"To: <" + sub.FormCfg.Mail.Recipient + ">\r\n" +
 		"Subject: " + sub.FormCfg.Mail.Subject + " - " + sub.Id + "\r\n" +
-		"Reply-To: <" + sub.Fields[sub.FormCfg.Field.Email] + ">\r\n" +
+		"Reply-To: <" + sub.Body[sub.FormCfg.Fields.Email] + ">\r\n" +
 		"MIME-version: 1.0;\r\nContent-Type: text/html; charset=\"UTF-8\";\r\n\r\n"
 
 	return message{
@@ -51,7 +51,7 @@ func buildEmailMessage(sub FormSubmission) (message, error) {
 		Body:      []byte(headers + body.String()),
 		Recipient: "<" + sub.FormCfg.Mail.Recipient + ">",
 		Sender:    "<" + sub.FormCfg.Mail.Sender + ">",
-		ReplyTo:   sub.Fields[sub.FormCfg.Field.Email],
+		ReplyTo:   sub.Body[sub.FormCfg.Fields.Email],
 	}, nil
 }
 

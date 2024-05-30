@@ -9,7 +9,7 @@ import (
 type Check struct{}
 
 func (c *Check) honeypot(sub FormSubmission) (bool, error) {
-	if field, exists := sub.Fields[sub.FormCfg.Field.Honeypot]; exists {
+	if field, exists := sub.Body[sub.FormCfg.Fields.Honeypot]; exists {
 		if field != "" {
 			return false, errors.New("honeypot field is not empty")
 		}
@@ -22,6 +22,6 @@ func (c *Check) turnstile(sub FormSubmission) (bool, error) {
 		return true, nil
 	}
 	secret := sub.FormCfg.TurnstileKey
-	token := sub.Fields["cf-turnstile-response"]
+	token := sub.Body["cf-turnstile-response"]
 	return antispam.Turnstile(secret, token)
 }

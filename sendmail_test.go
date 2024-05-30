@@ -31,7 +31,7 @@ func TestBuildAndSend(t *testing.T) {
 				Sender:    "sender@example.com",
 				Subject:   "Test Subject",
 			},
-			Field: struct {
+			Fields: struct {
 				Name     string `toml:"name"`
 				Email    string `toml:"email"`
 				Message  string `toml:"message"`
@@ -43,7 +43,7 @@ func TestBuildAndSend(t *testing.T) {
 				Honeypot: "honeypot",
 			},
 		},
-		Fields: map[string]string{
+		Body: map[string]string{
 			"email": "replyto@example.com",
 		},
 	}
@@ -65,7 +65,7 @@ func TestBuildEmailMessage(t *testing.T) {
 			Sender:    "sender@example.com",
 			Subject:   "Test Subject",
 		},
-		Field: struct {
+		Fields: struct {
 			Name     string `toml:"name"`
 			Email    string `toml:"email"`
 			Message  string `toml:"message"`
@@ -81,7 +81,7 @@ func TestBuildEmailMessage(t *testing.T) {
 	sub := FormSubmission{
 		Id:      "example",
 		FormCfg: formCfg,
-		Fields: map[string]string{
+		Body: map[string]string{
 			"name":    "TestName",
 			"email":   "test@example.com",
 			"message": "Testing the message field.",
@@ -96,7 +96,7 @@ func TestBuildEmailMessage(t *testing.T) {
 	headers := "From: <" + sub.FormCfg.Mail.Sender + ">\r\n" +
 		"To: <" + sub.FormCfg.Mail.Recipient + ">\r\n" +
 		"Subject: " + sub.FormCfg.Mail.Subject + " - " + sub.Id + "\r\n" +
-		"Reply-To: <" + sub.Fields[sub.FormCfg.Field.Email] + ">\r\n" +
+		"Reply-To: <" + sub.Body[sub.FormCfg.Fields.Email] + ">\r\n" +
 		"MIME-version: 1.0;\r\nContent-Type: text/html; charset=\"UTF-8\";\r\n\r\n"
 
 	expectedMsg := message{
