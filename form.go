@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/microcosm-cc/bluemonday"
 	"log"
 	"net/http"
-	"github.com/microcosm-cc/bluemonday"
 )
 
 type FormHandler struct {
@@ -28,7 +28,7 @@ func (fh *FormHandler) handleFormSubmission(w http.ResponseWriter, r *http.Reque
 		http.Error(w, "Spam detected", http.StatusBadRequest)
 		return
 	}
-	success := fh.sendMail()
+	success := fh.sendMail(submission)
 	if !success {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
@@ -80,6 +80,6 @@ func (fh *FormHandler) checkSpam(sub FormSubmission) bool {
 
 // sendMail sends the form submission as an email
 // returns true if the email was sent successfully, false otherwise
-func (fh *FormHandler) sendMail() bool {
-	return buildAndSend(fh.Config, fh.FormSubmission) == nil
+func (fh *FormHandler) sendMail(sub FormSubmission) bool {
+	return buildAndSend(fh.Config, sub) == nil
 }
