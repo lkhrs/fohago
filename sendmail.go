@@ -1,27 +1,27 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"html/template"
 	"net/smtp"
 )
 
 type message struct {
 	Subject   string
-	Body      string
+	Body      []byte
 	Recipient string
 	Sender    string
 	ReplyTo   string
 }
 
 func buildAndSend(cfg *Config, sub FormSubmission) error {
-	// Build the email message using a template
 	message, err := buildEmailMessage(sub)
 	if err != nil {
 		fmt.Println("Failed to build email message:", err)
 		return err
 	}
 
-	// Send the email using the configured SMTP server
 	err = sendEmail(cfg, message)
 	if err != nil {
 		fmt.Println("Failed to send email:", err)
@@ -33,23 +33,50 @@ func buildAndSend(cfg *Config, sub FormSubmission) error {
 }
 
 func buildEmailMessage(sub FormSubmission) (message, error) {
-	body := fmt.Sprintf("From: %s\nReply-To: %s\n\n%s", sub.Fields[sub.FormCfg.Field.Email], sub.Fields[sub.FormCfg.Field.Email], sub.Fields[sub.FormCfg.Field.Message])
+	tmpl := loadTemplate(sub.Id)
+
+	var body bytes.Buffer
+	if err := tmpl.ExecuteTemplate(&body, sub.Id+".html", sub.Fields); err != nil {
+		return message{}, err
+	}
+
+	headers := "From: " + sub.FormCfg.Mail.Sender + "\r\n" +
+		"To: " + sub.FormCfg.Mail.Recipient + "\r\n" +
+		"Subject: " + sub.FormCfg.Mail.Subject + " - " + sub.Id + "\r\n" +
+		"Reply-To: " + sub.Fields[sub.FormCfg.Field.Email] + "\r\n" +
+		"MIME-version: 1.0;\r\nContent-Type: text/html; charset=\"UTF-8\";\r\n\r\n"
 
 	return message{
 		Subject:   sub.FormCfg.Mail.Subject + " - " + sub.Id,
-		Body:      body,
-		Recipient: sub.FormCfg.Mail.Recipient,
-		Sender:    sub.FormCfg.Mail.Sender,
+		Body:      []byte(headers + body.String()),
+		Recipient: "<" + sub.FormCfg.Mail.Recipient + ">",
+		Sender:    "<" + sub.FormCfg.Mail.Sender + ">",
 		ReplyTo:   sub.Fields[sub.FormCfg.Field.Email],
 	}, nil
 }
 
 func sendEmail(cfg *Config, message message) error {
 	auth := smtp.PlainAuth("", cfg.Smtp.User, cfg.Smtp.Password, cfg.Smtp.Host)
-	err := smtp.SendMail(fmt.Sprintf("%s:%d", cfg.Smtp.Host, cfg.Smtp.Port), auth, message.Sender, []string{message.Recipient}, []byte(message.Body))
+	err := smtp.SendMail(fmt.Sprintf("%s:%d", cfg.Smtp.Host, cfg.Smtp.Port), auth, message.Sender, []string{message.Recipient}, message.Body)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func loadTemplate(id string) *template.Template {
+	defaultTemplate, err := template.New("default").ParseFiles("forms/default.html")
+	if err != nil {
+		fmt.Println("Failed to parse default template:", err)
+		return nil
+	}
+
+	template, err := template.ParseFiles(fmt.Sprintf("forms/%s.html", id))
+	if err != nil {
+		fmt.Println("Failed to parse template:", err)
+		return defaultTemplate
+	}
+
+	return template
 }
