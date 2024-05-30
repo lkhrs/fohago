@@ -1,0 +1,16 @@
+# Global blocklist
+blocklist = ["http"]
+[forms]
+[forms.default]
+# Add additional words to block specific to the form
+blocklist = ["casino"] 
+turnstile_key = ""
+[forms.default.fields]
+name = "name"
+email = "email"
+message = "message"
+honeypot = "honeypot"
+[forms.default.mail]
+recipient = "recipient@example.com"
+sender = "sender@example.com"
+subject = "New submission from"
