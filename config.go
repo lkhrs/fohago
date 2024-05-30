@@ -12,7 +12,6 @@ import (
 type Config struct {
 	Api struct {
 		Akismet            string `env:"AKISMET_KEY"`
-		GoogleSafeBrowsing string `env:"GOOGLE_KEY"`
 	}
 	Forms map[string]FormConfig
 	Smtp  struct {
