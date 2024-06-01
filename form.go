@@ -64,21 +64,6 @@ func (fh *FormHandler) process(w http.ResponseWriter, r *http.Request) FormSubmi
 	return submission
 }
 
-// checkSpam checks the form submission for spam
-// returns true if the checks pass, false if spam is detected
-func (fh *FormHandler) checkSpam(sub FormSubmission) bool {
-	check := &Check{}
-	if pass, err := check.honeypot(sub); !pass {
-		log.Println("Honeypot check failed:", err)
-		return false
-	}
-	if pass, err := check.turnstile(sub); !pass {
-		log.Println("Turnstile check failed:", err)
-		return false
-	}
-	return true
-}
-
 // sendMail sends the form submission as an email
 // returns true if the email was sent successfully, false otherwise
 func (fh *FormHandler) sendMail(sub FormSubmission) bool {

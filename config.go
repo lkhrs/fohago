@@ -43,6 +43,7 @@ type FormConfig struct {
 		Message  string `toml:"message"`
 		Honeypot string `toml:"honeypot"`
 	} `toml:"field"`
+	Blocklist []string `toml:"blocklist"`
 }
 
 // check the config for required fields
