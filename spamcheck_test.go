@@ -19,10 +19,10 @@ func TestCheck_blocklist(t *testing.T) {
 	}
 
 	tests := []struct {
+		expectedErr  error
 		name         string
 		submission   FormSubmission
 		expectedPass bool
-		expectedErr  error
 	}{
 		{
 			name: "Blocklist term 'form'",
@@ -161,14 +161,33 @@ func TestCheck_honeypot(t *testing.T) {
 	}
 }
 
+type testKey struct {
+	Pass string
+	Fail string
+}
+
+type testKeys struct {
+	Secret testKey
+	Token  string
+}
+
+var keys = testKeys{
+	Secret: testKey{
+		Pass: "1x0000000000000000000000000000000AA",
+		Fail: "2x0000000000000000000000000000000AA",
+	},
+	Token: "XXXX.DUMMY.TOKEN.XXXX",
+}
+
 func TestCheck_turnstile(t *testing.T) {
 	c := &Check{}
+	// test pass key (true)
 	sub := FormSubmission{
 		FormCfg: FormConfig{
-			TurnstileKey: "secret",
+			TurnstileKey: keys.Secret.Pass,
 		},
 		Body: map[string]string{
-			"cf-turnstile-response": "token",
+			"cf-turnstile-response": keys.Token,
 		},
 	}
 	expected := true
@@ -180,6 +199,7 @@ func TestCheck_turnstile(t *testing.T) {
 		t.Errorf("Expected no error, got %v", err)
 	}
 
+	// test blank key (true)
 	sub.FormCfg.TurnstileKey = ""
 	expected = true
 	pass, err = c.turnstile(sub)
@@ -190,10 +210,11 @@ func TestCheck_turnstile(t *testing.T) {
 		t.Errorf("Expected no error, got %v", err)
 	}
 
-	sub.FormCfg.TurnstileKey = "secret"
-	sub.Body["cf-turnstile-response"] = "invalid"
+	// test fail key (false)
+	sub.FormCfg.TurnstileKey = keys.Secret.Fail
+	sub.Body["cf-turnstile-response"] = keys.Token
 	expected = false
-	expectedErr := errors.New("invalid turnstile token")
+	expectedErr := errors.New("invalid-input-response")
 	pass, err = c.turnstile(sub)
 	if pass != expected {
 		t.Errorf("Expected %v, got %v", expected, pass)
@@ -217,7 +238,7 @@ func TestFormHandler_checkSpam(t *testing.T) {
 	sub := FormSubmission{
 		Body: map[string]string{
 			"message":               "This is a test message",
-			"cf-turnstile-response": "token",
+			"cf-turnstile-response": keys.Token,
 			"honeypot":              "",
 		},
 		FormCfg: FormConfig{
@@ -231,7 +252,7 @@ func TestFormHandler_checkSpam(t *testing.T) {
 				Message:  "message",
 				Honeypot: "honeypot",
 			},
-			TurnstileKey: "secret",
+			TurnstileKey: keys.Secret.Pass,
 		},
 	}
 	expected := true
@@ -244,7 +265,7 @@ func TestFormHandler_checkSpam(t *testing.T) {
 	expected = false
 	pass = fh.checkSpam(sub)
 	if pass != expected {
-		t.Errorf("Expected %v, got %v", expected, pass)
+		t.Errorf("Honeypot not empty: Expected %v, got %v", expected, pass)
 	}
 
 	sub.Body["honeypot"] = ""
@@ -252,14 +273,14 @@ func TestFormHandler_checkSpam(t *testing.T) {
 	expected = false
 	pass = fh.checkSpam(sub)
 	if pass != expected {
-		t.Errorf("Expected %v, got %v", expected, pass)
+		t.Errorf("Honeypot empty: Expected %v, got %v", expected, pass)
 	}
 
 	sub.Body["message"] = "This is a test message"
-	sub.Body["cf-turnstile-response"] = "invalid"
+	sub.FormCfg.TurnstileKey = keys.Secret.Fail
 	expected = false
 	pass = fh.checkSpam(sub)
 	if pass != expected {
-		t.Errorf("Expected %v, got %v", expected, pass)
+		t.Errorf("Turnstile: Expected %v, got %v", expected, pass)
 	}
 }
