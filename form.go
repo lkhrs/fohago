@@ -8,8 +8,8 @@ import (
 )
 
 type FormHandler struct {
-	FormSubmission FormSubmission
 	Config         *Config
+	FormSubmission FormSubmission
 }
 
 type FormSubmission struct {

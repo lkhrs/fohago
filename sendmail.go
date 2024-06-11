@@ -9,20 +9,20 @@ import (
 
 type message struct {
 	Subject   string
-	Body      []byte
 	Recipient string
 	Sender    string
 	ReplyTo   string
+	Body      []byte
 }
 
 func buildAndSend(cfg *Config, sub FormSubmission) error {
-	message, err := buildEmailMessage(sub)
+	msg, err := buildEmailMessage(sub)
 	if err != nil {
 		fmt.Println("Failed to build email message:", err)
 		return err
 	}
 
-	err = sendEmail(cfg, message)
+	err = sendEmail(cfg, msg)
 	if err != nil {
 		fmt.Println("Failed to send email:", err)
 		return err
