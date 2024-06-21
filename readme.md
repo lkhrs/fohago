@@ -8,10 +8,10 @@ Form handler written in Go.
 - [x] Email form submissions
 - [x] Email templating
 - [x] Handle multiple forms
-- [ ] Global keyword blocklist for message field
-- [ ] Form configuration
+- [x] Global keyword blocklist for message field
+- [x] Form configuration
 	- [x] Designate fields, e.g. "name", "email", "message"
-	- [ ] Additional keyword blocklist
+	- [x] Additional keyword blocklist
 - [x] Honeypot field
 - [x] Cloudflare Turnstile validation
 - [ ] Akismet validation
