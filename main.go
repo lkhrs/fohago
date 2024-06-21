@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	config, err := loadConfig()
+	config, err := loadConfig("fohago.toml")
 	if err != nil {
 		log.Fatal(err)
 	}

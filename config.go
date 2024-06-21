@@ -87,20 +87,20 @@ func loadFromToml(cfg *Config, path string) error {
 	return nil
 }
 
-func loadConfig() (*Config, error) {
+func loadConfig(file string) (*Config, error) {
 	cfg := &Config{}
-
-	if err := loadFromToml(cfg, "./fohago.toml"); err != nil && !os.IsNotExist(err) {
-		return nil, err
-	} else if os.IsNotExist(err) {
-		log.Println("No configuration file found")
-	}
 
 	if err := loadFromEnv(cfg); err != nil {
 		log.Println("Error loading environment variables:", err)
 		log.Println("Using defaults")
 	}
 
+	if err := loadFromToml(cfg, file); err != nil && !os.IsNotExist(err) {
+		return nil, err
+	} else if os.IsNotExist(err) {
+		log.Println("No configuration file found")
+	}
+	
 	if err := cfg.check(); err != nil {
 		return nil, err
 	}
