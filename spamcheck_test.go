@@ -10,7 +10,7 @@ func TestCheck_blocklist(t *testing.T) {
 	fh := &FormHandler{
 		Config: &Config{
 			Global: struct {
-				Blocklist []string `toml:"blocklist" env:"BLOCKLIST" envSeparator:","`
+				Blocklist []string `env:"BLOCKLIST" envSeparator:","`
 				Port      int      `env:"PORT" envDefault:"8080"`
 			}{
 				Blocklist: []string{"casino", "website"},
@@ -33,10 +33,10 @@ func TestCheck_blocklist(t *testing.T) {
 				FormCfg: FormConfig{
 					Blocklist: []string{"form", "http"},
 					Fields: struct {
-						Name     string `toml:"name"`
-						Email    string `toml:"email"`
-						Message  string `toml:"message"`
-						Honeypot string `toml:"honeypot"`
+						Name     string
+						Email    string
+						Message  string
+						Honeypot string
 					}{
 						Message: "message",
 					},
@@ -54,10 +54,10 @@ func TestCheck_blocklist(t *testing.T) {
 				FormCfg: FormConfig{
 					Blocklist: []string{"test", "http"},
 					Fields: struct {
-						Name     string `toml:"name"`
-						Email    string `toml:"email"`
-						Message  string `toml:"message"`
-						Honeypot string `toml:"honeypot"`
+						Name     string
+						Email    string
+						Message  string
+						Honeypot string
 					}{
 						Message: "message",
 					},
@@ -75,10 +75,10 @@ func TestCheck_blocklist(t *testing.T) {
 				FormCfg: FormConfig{
 					Blocklist: []string{"test", "http"},
 					Fields: struct {
-						Name     string `toml:"name"`
-						Email    string `toml:"email"`
-						Message  string `toml:"message"`
-						Honeypot string `toml:"honeypot"`
+						Name     string
+						Email    string
+						Message  string
+						Honeypot string
 					}{
 						Message: "message",
 					},
@@ -96,10 +96,10 @@ func TestCheck_blocklist(t *testing.T) {
 				FormCfg: FormConfig{
 					Blocklist: []string{"test", "http"},
 					Fields: struct {
-						Name     string `toml:"name"`
-						Email    string `toml:"email"`
-						Message  string `toml:"message"`
-						Honeypot string `toml:"honeypot"`
+						Name     string
+						Email    string
+						Message  string
+						Honeypot string
 					}{
 						Message: "message",
 					},
@@ -131,10 +131,10 @@ func TestCheck_honeypot(t *testing.T) {
 		},
 		FormCfg: FormConfig{
 			Fields: struct {
-				Name     string "toml:\"name\""
-				Email    string "toml:\"email\""
-				Message  string "toml:\"message\""
-				Honeypot string "toml:\"honeypot\""
+				Name     string
+				Email    string
+				Message  string
+				Honeypot string
 			}{
 				Honeypot: "honeypot",
 			},
@@ -228,7 +228,7 @@ func TestFormHandler_checkSpam(t *testing.T) {
 	fh := &FormHandler{
 		Config: &Config{
 			Global: struct {
-				Blocklist []string `toml:"blocklist" env:"BLOCKLIST" envSeparator:","`
+				Blocklist []string `env:"BLOCKLIST" envSeparator:","`
 				Port      int      `env:"PORT" envDefault:"8080"`
 			}{
 				Blocklist: []string{"global", "block"},
@@ -244,10 +244,10 @@ func TestFormHandler_checkSpam(t *testing.T) {
 		FormCfg: FormConfig{
 			Blocklist: []string{"spam", "block"},
 			Fields: struct {
-				Name     string `toml:"name"`
-				Email    string `toml:"email"`
-				Message  string `toml:"message"`
-				Honeypot string `toml:"honeypot"`
+				Name     string
+				Email    string
+				Message  string
+				Honeypot string
 			}{
 				Message:  "message",
 				Honeypot: "honeypot",

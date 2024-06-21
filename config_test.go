@@ -70,7 +70,7 @@ port = 25
 [forms]
 [forms.form1]
 blocklist = ["business", "website"]
-turnstile_key = "turnstile_key1"
+turnstileKey = "turnstile_key1"
 [forms.form1.fields]
 name = "name1"
 email = "email1"
@@ -82,7 +82,7 @@ sender = "sender@example.com"
 subject = "New submission"
 [forms.form2]
 blocklist = ["business", "website"]
-turnstile_key = "turnstile_key1"
+turnstileKey = "turnstile_key1"
 [forms.form2.fields]
 name = "name1"
 email = "email1"

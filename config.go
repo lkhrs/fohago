@@ -21,7 +21,7 @@ type Config struct {
 		Port     int    `env:"SMTP_PORT" envDefault:"1025"`
 	}
 	Global struct {
-		Blocklist []string `toml:"blocklist" env:"BLOCKLIST" envSeparator:","`
+		Blocklist []string `env:"BLOCKLIST" envSeparator:","`
 		Port      int      `env:"PORT" envDefault:"8080"`
 	}
 }
@@ -29,21 +29,21 @@ type Config struct {
 type FormBody map[string]string
 
 type FormConfig struct {
-	Id   string `toml:"id"`
+	Id   string
 	Body FormBody
 	Mail struct {
-		Recipient string `toml:"recipient"`
-		Sender    string `toml:"sender"`
-		Subject   string `toml:"subject"`
-	} `toml:"mail"`
-	TurnstileKey string `toml:"turnstile_key"`
+		Recipient string
+		Sender    string
+		Subject   string
+	}
+	TurnstileKey string
 	Fields       struct {
-		Name     string `toml:"name"`
-		Email    string `toml:"email"`
-		Message  string `toml:"message"`
-		Honeypot string `toml:"honeypot"`
-	} `toml:"fields"`
-	Blocklist []string `toml:"blocklist"`
+		Name     string
+		Email    string
+		Message  string
+		Honeypot string
+	}
+	Blocklist []string
 }
 
 // check the config for required fields
@@ -100,7 +100,7 @@ func loadConfig(file string) (*Config, error) {
 	} else if os.IsNotExist(err) {
 		log.Println("No configuration file found")
 	}
-	
+
 	if err := cfg.check(); err != nil {
 		return nil, err
 	}

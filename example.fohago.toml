@@ -4,7 +4,7 @@ blocklist = ["http"]
 [forms.default]
 # Add additional words to block specific to the form
 blocklist = ["casino"] 
-turnstile_key = ""
+turnstileKey = ""
 [forms.default.fields]
 name = "name"
 email = "email"

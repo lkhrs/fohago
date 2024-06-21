@@ -23,19 +23,19 @@ func TestBuildAndSend(t *testing.T) {
 		Id: "example",
 		FormCfg: FormConfig{
 			Mail: struct {
-				Recipient string `toml:"recipient"`
-				Sender    string `toml:"sender"`
-				Subject   string `toml:"subject"`
+				Recipient string
+				Sender    string
+				Subject   string
 			}{
 				Recipient: "recipient@example.com",
 				Sender:    "sender@example.com",
 				Subject:   "Test Subject",
 			},
 			Fields: struct {
-				Name     string `toml:"name"`
-				Email    string `toml:"email"`
-				Message  string `toml:"message"`
-				Honeypot string `toml:"honeypot"`
+				Name     string
+				Email    string
+				Message  string
+				Honeypot string
 			}{
 				Name:     "name",
 				Email:    "email",
@@ -57,19 +57,19 @@ func TestBuildAndSend(t *testing.T) {
 func TestBuildEmailMessage(t *testing.T) {
 	formCfg := FormConfig{
 		Mail: struct {
-			Recipient string `toml:"recipient"`
-			Sender    string `toml:"sender"`
-			Subject   string `toml:"subject"`
+			Recipient string
+			Sender    string
+			Subject   string
 		}{
 			Recipient: "recipient@example.com",
 			Sender:    "sender@example.com",
 			Subject:   "Test Subject",
 		},
 		Fields: struct {
-			Name     string `toml:"name"`
-			Email    string `toml:"email"`
-			Message  string `toml:"message"`
-			Honeypot string `toml:"honeypot"`
+			Name     string
+			Email    string
+			Message  string
+			Honeypot string
 		}{
 			Name:     "name",
 			Email:    "email",
