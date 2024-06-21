@@ -42,7 +42,7 @@ type FormConfig struct {
 		Email    string `toml:"email"`
 		Message  string `toml:"message"`
 		Honeypot string `toml:"honeypot"`
-	} `toml:"field"`
+	} `toml:"fields"`
 	Blocklist []string `toml:"blocklist"`
 }
 
