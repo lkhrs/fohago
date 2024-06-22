@@ -11,6 +11,8 @@ require (
 require (
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
+	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.9.0 // indirect
+	github.com/writefreely/go-akismet v1.1.0
 	golang.org/x/net v0.25.0 // indirect
 )

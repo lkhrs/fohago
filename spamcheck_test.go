@@ -2,7 +2,10 @@ package main
 
 import (
 	"errors"
+	"os"
 	"testing"
+
+	"github.com/joho/godotenv"
 )
 
 func TestCheck_blocklist(t *testing.T) {
@@ -12,6 +15,7 @@ func TestCheck_blocklist(t *testing.T) {
 			Global: struct {
 				Blocklist []string `env:"BLOCKLIST" envSeparator:","`
 				Port      int      `env:"PORT" envDefault:"8080"`
+				BaseUrl   string
 			}{
 				Blocklist: []string{"casino", "website"},
 			},
@@ -224,14 +228,83 @@ func TestCheck_turnstile(t *testing.T) {
 	}
 }
 
-func TestFormHandler_checkSpam(t *testing.T) {
+func TestCheck_akismet(t *testing.T) {
+	c := &Check{}
+	err := godotenv.Load()
+	if err != nil {
+		t.Errorf("Unable to load environment variables from .env")
+	}
+	if os.Getenv("AKISMET_KEY") == "" {
+		t.Errorf("AKISMET_KEY is not set")
+	}
 	fh := &FormHandler{
 		Config: &Config{
 			Global: struct {
 				Blocklist []string `env:"BLOCKLIST" envSeparator:","`
 				Port      int      `env:"PORT" envDefault:"8080"`
+				BaseUrl   string
 			}{
 				Blocklist: []string{"global", "block"},
+				Port:      8080,
+				BaseUrl:   "http://localhost:8080",
+			},
+			Api: struct {
+				Akismet string `env:"AKISMET_KEY"`
+			}{
+				Akismet: os.Getenv("AKISMET_KEY"),
+			},
+		},
+	}
+	sub := FormSubmission{}
+	sub.UserIP = "127.0.0.1"
+	sub.UserAgent = "Mozilla/5.0"
+	sub.FormCfg.Fields.Name = "name"
+	sub.FormCfg.Fields.Email = "email"
+	sub.FormCfg.Fields.Message = "message"
+
+	sub.Body = map[string]string{
+		"message": "This is a test message",
+		"name":    "akismet-guaranteed-spam",
+		"email":   "akismet-guaranteed-spam@example.com",
+	}
+	expected := true
+	pass, err := c.akismet(sub, *fh, true, "")
+	if pass != expected {
+		t.Errorf("Expected %v, got %v: %v", expected, pass, err)
+	}
+
+	sub.Body["name"] = "Not spam"
+	sub.Body["email"] = "notspam@example.com"
+	expected = false
+	pass, err = c.akismet(sub, *fh, true, "administrator")
+	if pass != expected {
+		t.Errorf("Expected %v, got %v: %v", expected, pass, err)
+	}
+}
+
+func TestFormHandler_checkSpam(t *testing.T) {
+	err := godotenv.Load()
+	if err != nil {
+		t.Errorf("Unable to load environment variables from .env")
+	}
+	if os.Getenv("AKISMET_KEY") == "" {
+		t.Errorf("AKISMET_KEY is not set")
+	}
+	fh := &FormHandler{
+		Config: &Config{
+			Global: struct {
+				Blocklist []string `env:"BLOCKLIST" envSeparator:","`
+				Port      int      `env:"PORT" envDefault:"8080"`
+				BaseUrl   string
+			}{
+				Blocklist: []string{"global", "block"},
+				Port:      8080,
+				BaseUrl:   "http://localhost:8080",
+			},
+			Api: struct {
+				Akismet string `env:"AKISMET_KEY"`
+			}{
+				Akismet: os.Getenv("AKISMET_KEY"),
 			},
 		},
 	}
@@ -254,6 +327,8 @@ func TestFormHandler_checkSpam(t *testing.T) {
 			},
 			TurnstileKey: keys.Secret.Pass,
 		},
+		UserAgent: "Mozilla/5.0",
+		UserIP:    "8.8.8.8",
 	}
 	expected := true
 	pass := fh.checkSpam(sub)

@@ -2,7 +2,9 @@ package main
 
 import (
 	"log"
+	"net"
 	"net/http"
+	"strings"
 
 	"github.com/microcosm-cc/bluemonday"
 )
@@ -13,9 +15,12 @@ type FormHandler struct {
 }
 
 type FormSubmission struct {
-	Id      string
-	Body    FormBody
-	FormCfg FormConfig
+	Id        string
+	Body      FormBody
+	FormCfg   FormConfig
+	UserAgent string
+	UserIP    string
+	Referrer  string
 }
 
 func NewFormHandler(conf *Config) *FormHandler {
@@ -33,7 +38,22 @@ func (fh *FormHandler) handleFormSubmission(w http.ResponseWriter, r *http.Reque
 	if !success {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
+}
 
+func (fh *FormHandler) getClientIP(r *http.Request) string {
+	ip := r.Header.Get("X-Forwarded-For")
+	if ip != "" {
+		return strings.Split(ip, ",")[0]
+	}
+	ip = r.Header.Get("X-Real-IP")
+	if ip != "" {
+		return ip
+	}
+	ip, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		return r.RemoteAddr
+	}
+	return ip
 }
 
 // process parses the form submission and returns a FormSubmission struct
@@ -56,9 +76,12 @@ func (fh *FormHandler) process(w http.ResponseWriter, r *http.Request) FormSubmi
 	}
 
 	submission := FormSubmission{
-		Id:      id,
-		Body:    fields,
-		FormCfg: formCfg,
+		Id:        id,
+		Body:      fields,
+		FormCfg:   formCfg,
+		UserAgent: r.UserAgent(),
+		UserIP:    fh.getClientIP(r),
+		Referrer:  r.Referer(),
 	}
 
 	return submission

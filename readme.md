@@ -14,7 +14,7 @@ Form handler written in Go.
 	- [x] Additional keyword blocklist
 - [x] Honeypot field
 - [x] Cloudflare Turnstile validation
-- [ ] Akismet validation
+- [x] Akismet validation
 - [ ] Submission logging
 	- [ ] Multiple levels, such as "spam", "email failed", "success", "all"
 - [ ] Mailgun integration

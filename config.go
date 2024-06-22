@@ -23,6 +23,7 @@ type Config struct {
 	Global struct {
 		Blocklist []string `env:"BLOCKLIST" envSeparator:","`
 		Port      int      `env:"PORT" envDefault:"8080"`
+		BaseUrl   string
 	}
 }
 
