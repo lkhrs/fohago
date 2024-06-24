@@ -46,6 +46,9 @@ type FormConfig struct {
 		Honeypot string
 	}
 	Blocklist []string
+	Redirects struct {
+		Success string
+	}
 }
 
 // check the config for required fields

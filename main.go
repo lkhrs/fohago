@@ -21,6 +21,9 @@ func main() {
 	mux.HandleFunc("GET /test.html", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./test.html")
 	})
+	mux.HandleFunc("GET /success.html", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./success.html")
+	})
 
 	handler := middleware.Logging(mux)
 	handler = middleware.PanicRecovery(handler)

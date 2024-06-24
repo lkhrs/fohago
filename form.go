@@ -38,6 +38,11 @@ func (fh *FormHandler) handleFormSubmission(w http.ResponseWriter, r *http.Reque
 	if !success {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
+	successRedirect := fh.Config.Global.BaseUrl + "/success.html"
+	if submission.FormCfg.Redirects.Success != "" {
+		successRedirect = submission.FormCfg.Redirects.Success
+	}
+	http.Redirect(w, r, successRedirect, http.StatusFound)
 }
 
 func (fh *FormHandler) getClientIP(r *http.Request) string {
