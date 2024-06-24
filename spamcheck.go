@@ -45,7 +45,7 @@ func (c *Check) turnstile(sub FormSubmission) (bool, error) {
 
 func (c *Check) akismet(sub FormSubmission, fh FormHandler, isTest bool, userRole string) (bool, error) {
 	if fh.Config.Api.Akismet == "" {
-		return true, errors.New("no Akismet key provided")
+		return false, errors.New("no Akismet key provided")
 	}
 	isSpam, err := akismet.Check(&akismet.Comment{
 		Blog:               fh.Config.Global.BaseUrl, // required
@@ -79,7 +79,7 @@ func (fh *FormHandler) checkSpam(sub FormSubmission) bool {
 		log.Println("Turnstile check failed:", err)
 		return false
 	}
-	if isSpam, err := check.akismet(sub, *fh, false, ""); isSpam {
+	if isSpam, err := check.akismet(sub, *fh, fh.Config.Api.AkismetTest, ""); isSpam {
 		log.Println("Akismet check failed:", err)
 		return false
 	}

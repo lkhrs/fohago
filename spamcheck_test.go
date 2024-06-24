@@ -249,7 +249,8 @@ func TestCheck_akismet(t *testing.T) {
 				BaseUrl:   "http://localhost:8080",
 			},
 			Api: struct {
-				Akismet string `env:"AKISMET_KEY"`
+				Akismet     string `env:"AKISMET_KEY"`
+				AkismetTest bool
 			}{
 				Akismet: os.Getenv("AKISMET_KEY"),
 			},
@@ -302,7 +303,8 @@ func TestFormHandler_checkSpam(t *testing.T) {
 				BaseUrl:   "http://localhost:8080",
 			},
 			Api: struct {
-				Akismet string `env:"AKISMET_KEY"`
+				Akismet     string `env:"AKISMET_KEY"`
+				AkismetTest bool
 			}{
 				Akismet: os.Getenv("AKISMET_KEY"),
 			},

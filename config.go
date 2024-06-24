@@ -11,7 +11,8 @@ import (
 
 type Config struct {
 	Api struct {
-		Akismet string `env:"AKISMET_KEY"`
+		Akismet     string `env:"AKISMET_KEY"`
+		AkismetTest bool
 	}
 	Forms map[string]FormConfig
 	Smtp  struct {
