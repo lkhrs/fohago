@@ -62,3 +62,6 @@ Temporary Items
 fohago.toml
 forms/*
 !forms/default.html
+
+#air
+/tmp/
