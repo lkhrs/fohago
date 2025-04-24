@@ -10,10 +10,6 @@ import (
 )
 
 type Config struct {
-	Api struct {
-		Akismet     string `env:"AKISMET_KEY"`
-		AkismetTest bool
-	}
 	Forms map[string]FormConfig
 	Smtp  struct {
 		User     string `env:"SMTP_USER"`
@@ -70,7 +66,6 @@ func loadFromEnv(cfg *Config) error {
 	fields := []interface{}{
 		&cfg.Global,
 		&cfg.Smtp,
-		&cfg.Api,
 	}
 	for _, field := range fields {
 		if err := env.Parse(field); err != nil {

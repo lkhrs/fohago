@@ -14,7 +14,6 @@ func TestLoadFromEnv(t *testing.T) {
 	os.Setenv("SMTP_USER", "user")
 	os.Setenv("SMTP_PASS", "pass")
 	os.Setenv("BLOCKLIST", "block1,block2")
-	os.Setenv("AKISMET_KEY", "your_akismet_key")
 
 	// Load environment variables into config
 	cfg := &Config{}
@@ -30,7 +29,6 @@ func TestLoadFromEnv(t *testing.T) {
 	os.Unsetenv("SMTP_USER")
 	os.Unsetenv("SMTP_PASS")
 	os.Unsetenv("BLOCKLIST")
-	os.Unsetenv("AKISMET_KEY")
 
 	// Check the loaded config fields
 	if cfg.Global.Port != 8080 {
@@ -54,9 +52,6 @@ func TestLoadFromEnv(t *testing.T) {
 	blocklist := []string{"block1", "block2"}
 	if reflect.DeepEqual(cfg.Global.Blocklist, blocklist) != true {
 		t.Errorf("Expected Global.Blocklist to contain %v, got %v", blocklist, cfg.Global.Blocklist)
-	}
-	if cfg.Api.Akismet != "your_akismet_key" {
-		t.Errorf("Expected Api.Akismet to be 'your_akismet_key', got %s", cfg.Api.Akismet)
 	}
 }
 
@@ -192,7 +187,6 @@ func TestLoadConfig(t *testing.T) {
 	// Set environment variables for testing
 	os.Setenv("SMTP_USER", "user")
 	os.Setenv("SMTP_PASS", "pass")
-	os.Setenv("AKISMET_KEY", "your_akismet_key")
 
 	// Test loading the combined configuration from TOML and environment variables
 	cfg, err := loadConfig(tmpFile.Name())
@@ -203,7 +197,6 @@ func TestLoadConfig(t *testing.T) {
 	// Unset environment variables
 	os.Unsetenv("SMTP_USER")
 	os.Unsetenv("SMTP_PASS")
-	os.Unsetenv("AKISMET_KEY")
 
 	// Check fields configured by environment variables
 	if cfg.Smtp.User != "user" {
@@ -211,9 +204,6 @@ func TestLoadConfig(t *testing.T) {
 	}
 	if cfg.Smtp.Password != "pass" {
 		t.Errorf("Expected Smtp.Password to be 'pass', got %s", cfg.Smtp.Password)
-	}
-	if cfg.Api.Akismet != "your_akismet_key" {
-		t.Errorf("Expected Api.Akismet to be 'your_akismet_key', got %s", cfg.Api.Akismet)
 	}
 
 	checkTomlConfigFields(cfg, t)

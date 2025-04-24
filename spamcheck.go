@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"log"
 	"strings"
-	"time"
 
 	"github.com/lkhrs/fohago/antispam"
-	"github.com/writefreely/go-akismet"
 )
 
 type Check struct{}
@@ -43,26 +41,6 @@ func (c *Check) turnstile(sub FormSubmission) (bool, error) {
 	return antispam.Turnstile(secret, token)
 }
 
-func (c *Check) akismet(sub FormSubmission, fh FormHandler, isTest bool, userRole string) (bool, error) {
-	if fh.Config.Api.Akismet == "" {
-		return false, errors.New("no Akismet key provided")
-	}
-	isSpam, err := akismet.Check(&akismet.Comment{
-		Blog:               fh.Config.Global.BaseUrl, // required
-		UserIP:             sub.UserIP,               // required
-		UserAgent:          sub.UserAgent,            // required
-		Referrer:           sub.Referrer,
-		CommentType:        "contact‑form",
-		CommentAuthor:      sub.Body[sub.FormCfg.Fields.Name],
-		CommentAuthorEmail: sub.Body[sub.FormCfg.Fields.Email],
-		CommentContent:     sub.Body[sub.FormCfg.Fields.Message],
-		CommentDate:        time.Now(),
-		UserRole:           userRole,
-		Test:               isTest,
-	}, fh.Config.Api.Akismet)
-	return isSpam, err
-}
-
 // checkSpam checks the form submission for spam
 // returns true if the checks pass, false if spam is detected
 func (fh *FormHandler) checkSpam(sub FormSubmission) bool {
@@ -77,10 +55,6 @@ func (fh *FormHandler) checkSpam(sub FormSubmission) bool {
 	}
 	if pass, err := check.turnstile(sub); !pass {
 		log.Println("Turnstile check failed:", err)
-		return false
-	}
-	if isSpam, err := check.akismet(sub, *fh, fh.Config.Api.AkismetTest, ""); isSpam {
-		log.Println("Akismet check failed:", err)
 		return false
 	}
 	return true
