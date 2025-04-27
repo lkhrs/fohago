@@ -1,11 +1,11 @@
 module github.com/lkhrs/fohago
 
-go 1.22.2
+go 1.24.0
 
 require (
-	github.com/BurntSushi/toml v1.4.0
+	github.com/BurntSushi/toml v1.5.0
 	github.com/caarlos0/env v3.5.0+incompatible
-	github.com/microcosm-cc/bluemonday v1.0.26
+	github.com/microcosm-cc/bluemonday v1.0.27
 )
 
 require (
@@ -13,5 +13,5 @@ require (
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.9.0 // indirect
-	golang.org/x/net v0.25.0 // indirect
+	golang.org/x/net v0.39.0 // indirect
 )
