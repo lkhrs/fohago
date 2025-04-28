@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"log"
+	"log/slog"
 	"net/http"
 	"runtime/debug"
 )
@@ -14,16 +14,28 @@ func PanicRecovery(next http.Handler) http.Handler {
 		defer func() {
 			if err := recover(); err != nil {
 				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-				log.Println(string(debug.Stack()))
+				slog.Error("Server panic:",
+					slog.String("Request method:", r.Method),
+					slog.String("URI:", r.RequestURI),
+					slog.String("Remote address:", r.RemoteAddr),
+					slog.Any("Headers:", r.Header),
+				)
+				slog.Debug("HTTP handler panic:", slog.Any("debug", debug.Stack()))
 			}
 		}()
 		next.ServeHTTP(w, r)
 	})
 }
 
-func Logging(next http.Handler) http.Handler {
+func Logging(next http.Handler, accessLogger *slog.Logger) http.Handler {
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// middleware logic here
+		accessLogger.Debug("",
+			slog.String("Request method:", r.Method),
+			slog.String("URI:", r.RequestURI),
+			slog.String("Remote address:", r.RemoteAddr),
+			slog.Any("Headers:", r.Header),
+		)
 		next.ServeHTTP(w, r)
 	})
 }

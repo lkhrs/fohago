@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"log/slog"
 	"net/http"
 	"strconv"
 
@@ -9,14 +9,19 @@ import (
 )
 
 func main() {
-	config, err := loadConfig("fohago.toml")
-	if err != nil {
-		log.Fatal(err)
-	}
+	// Set up logging
+	serviceLogger := slog.New(ServiceLogHandler())
+	slog.SetDefault(serviceLogger)
+	accessLogger := slog.New(AccessLogHandler())
 
+	// Load config
+	config := loadConfig("fohago.toml")
+
+	// Set up HTTP handler
 	mux := http.NewServeMux()
 	fh := NewFormHandler(config)
 
+	// Routes
 	mux.HandleFunc("POST /{id}", fh.handleFormSubmission)
 	mux.HandleFunc("GET /test.html", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./test.html")
@@ -25,8 +30,10 @@ func main() {
 		http.ServeFile(w, r, "./success.html")
 	})
 
-	handler := middleware.Logging(mux)
+	// Middleware
+	handler := middleware.Logging(mux, accessLogger)
 	handler = middleware.PanicRecovery(handler)
 
+	// Start server
 	http.ListenAndServe(":"+strconv.Itoa(config.Global.Port), handler)
 }

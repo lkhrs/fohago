@@ -189,10 +189,7 @@ func TestLoadConfig(t *testing.T) {
 	os.Setenv("SMTP_PASS", "pass")
 
 	// Test loading the combined configuration from TOML and environment variables
-	cfg, err := loadConfig(tmpFile.Name())
-	if err != nil {
-		t.Errorf("Error loading configuration: %v", err)
-	}
+	cfg := loadConfig(tmpFile.Name())
 
 	// Unset environment variables
 	os.Unsetenv("SMTP_USER")

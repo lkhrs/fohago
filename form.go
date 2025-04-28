@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"log/slog"
 	"net"
 	"net/http"
 	"strings"
@@ -70,7 +70,7 @@ func (fh *FormHandler) process(w http.ResponseWriter, r *http.Request) FormSubmi
 	}
 
 	if err := r.ParseForm(); err != nil {
-		log.Println("Failed to parse form:", err)
+		slog.Error("Failed to parse form:", slog.Any("error", err))
 		http.Error(w, "Failed to parse form", http.StatusInternalServerError)
 	}
 

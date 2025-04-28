@@ -15,6 +15,7 @@ func TestCheck_blocklist(t *testing.T) {
 				Blocklist []string `env:"BLOCKLIST" envSeparator:","`
 				Port      int      `env:"PORT" envDefault:"8080"`
 				BaseUrl   string
+				LogLevel  string
 			}{
 				Blocklist: []string{"casino", "website"},
 			},
@@ -238,6 +239,7 @@ func TestFormHandler_checkSpam(t *testing.T) {
 				Blocklist []string `env:"BLOCKLIST" envSeparator:","`
 				Port      int      `env:"PORT" envDefault:"8080"`
 				BaseUrl   string
+				LogLevel  string
 			}{
 				Blocklist: []string{"global", "block"},
 				Port:      8080,

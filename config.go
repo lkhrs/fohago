@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
 
 	"github.com/BurntSushi/toml"
@@ -21,6 +21,7 @@ type Config struct {
 		Blocklist []string `env:"BLOCKLIST" envSeparator:","`
 		Port      int      `env:"PORT" envDefault:"8080"`
 		BaseUrl   string
+		LogLevel  string
 	}
 }
 
@@ -87,23 +88,23 @@ func loadFromToml(cfg *Config, path string) error {
 	return nil
 }
 
-func loadConfig(file string) (*Config, error) {
+func loadConfig(file string) *Config {
 	cfg := &Config{}
 
 	if err := loadFromEnv(cfg); err != nil {
-		log.Println("Error loading environment variables:", err)
-		log.Println("Using defaults")
+		slog.Warn("Could not load environment variables:", slog.Any("error", err))
+		slog.Info("Using defaults")
 	}
 
 	if err := loadFromToml(cfg, file); err != nil && !os.IsNotExist(err) {
-		return nil, err
+		slog.Warn("Problem loading config file:", slog.Any("error", err))
 	} else if os.IsNotExist(err) {
-		log.Println("No configuration file found")
+		slog.Warn("Could not load config file:", slog.Any("error", err))
 	}
 
 	if err := cfg.check(); err != nil {
-		return nil, err
+		slog.Error("Missing required option(s):", slog.Any("error", err))
 	}
 
-	return cfg, nil
+	return cfg
 }
