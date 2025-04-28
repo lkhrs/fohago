@@ -1,3 +1,4 @@
+#:schema ""
 root = "."
 testdata_dir = "testdata"
 tmp_dir = "tmp"
