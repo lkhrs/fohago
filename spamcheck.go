@@ -3,7 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
-	"log"
+	"log/slog"
 	"strings"
 
 	"github.com/lkhrs/fohago/antispam"
@@ -46,15 +46,15 @@ func (c *Check) turnstile(sub FormSubmission) (bool, error) {
 func (fh *FormHandler) checkSpam(sub FormSubmission) bool {
 	check := &Check{}
 	if pass, err := check.honeypot(sub); !pass {
-		log.Println("Honeypot check failed:", err)
+		slog.Info("Honeypot check failed:", slog.Any("error", err))
 		return false
 	}
 	if pass, err := check.blocklist(sub, *fh); !pass {
-		log.Println(err)
+		slog.Info("Blocklist check failed:", slog.Any("error", err))
 		return false
 	}
 	if pass, err := check.turnstile(sub); !pass {
-		log.Println("Turnstile check failed:", err)
+		logTurnstileFailure(err)
 		return false
 	}
 	return true
