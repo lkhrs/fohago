@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/BurntSushi/toml"
-	"github.com/caarlos0/env"
+	"github.com/caarlos0/env/v11"
 )
 
 type Config struct {
