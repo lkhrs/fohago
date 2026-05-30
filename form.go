@@ -71,7 +71,7 @@ func (fh *FormHandler) process(w http.ResponseWriter, r *http.Request) FormSubmi
 
 	if err := r.ParseForm(); err != nil {
 		slog.Error("Failed to parse form:", slog.Any("error", err))
-		http.Error(w, "Failed to parse form", http.StatusInternalServerError)
+		http.Error(w, "Failed to parse form", http.StatusUnprocessableEntity)
 	}
 
 	fields := make(FormBody)

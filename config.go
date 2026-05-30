@@ -64,7 +64,7 @@ func (c *Config) check() error {
 
 // loads the configuration from the environment
 func loadFromEnv(cfg *Config) error {
-	fields := []interface{}{
+	fields := []any{
 		&cfg.Global,
 		&cfg.Smtp,
 	}
