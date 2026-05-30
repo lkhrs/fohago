@@ -25,53 +25,51 @@ var keys = testKeys{
 }
 
 func TestTurnstile(t *testing.T) {
-	// Test case 1: Pass
-	secret := keys.Secret.Pass
-	response := keys.Token
-	expected := true
-	result, err := Turnstile(secret, response)
-	if err != nil {
-		t.Errorf("Unexpected error: %v", err)
-	}
-	if result != expected {
-		t.Errorf("Expected %v, but got %v", expected, result)
-	}
-
-	// Test case 2: Fail
-	secret = keys.Secret.Fail
-	expected = false
-	expectedErr := errors.New("invalid-input-response")
-	result, err = Turnstile(secret, response)
-	if err == nil {
-		t.Error("Expected an error, but got nil")
-	}
-	if err.Error() != expectedErr.Error() {
-		t.Errorf("Expected error 'invalid-input-response', got %v", err)
-	}
-	if result != expected {
-		t.Errorf("Expected %v, but got %v", expected, result)
-	}
-
-	// Test case 3: Empty secret
-	secret = ""
-	expectedErr = errors.New("missing-input-secret")
-	_, err = Turnstile(secret, response)
-	if err == nil {
-		t.Error("Expected an error, but got nil")
-	}
-	if err.Error() != expectedErr.Error() {
-		t.Errorf("Expected error '%v', but got '%v'", expectedErr, err)
+	tests := []struct {
+		name        string
+		secret      string
+		response    string
+		expected    bool
+		expectedErr error
+	}{
+		{
+			name:     "valid token passes",
+			secret:   keys.Secret.Pass,
+			response: keys.Token,
+			expected: true,
+		},
+		{
+			name:        "invalid response returns typed error",
+			secret:      keys.Secret.Fail,
+			response:    keys.Token,
+			expected:    false,
+			expectedErr: ErrInvalidInputResponse,
+		},
+		{
+			name:        "empty secret returns typed error",
+			secret:      "",
+			response:    keys.Token,
+			expected:    false,
+			expectedErr: ErrMissingInputSecret,
+		},
+		{
+			name:        "empty response returns typed error",
+			secret:      keys.Secret.Pass,
+			response:    "",
+			expected:    false,
+			expectedErr: ErrMissingInputResponse,
+		},
 	}
 
-	// Test case 4: Empty response
-	secret = keys.Secret.Pass
-	response = ""
-	expectedErr = errors.New("missing-input-response")
-	_, err = Turnstile(secret, response)
-	if err == nil {
-		t.Error("Expected an error, but got nil")
-	}
-	if err.Error() != expectedErr.Error() {
-		t.Errorf("Expected error '%v', but got '%v'", expectedErr, err)
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			result, err := Turnstile(test.secret, test.response)
+			if result != test.expected {
+				t.Errorf("Expected %v, but got %v", test.expected, result)
+			}
+			if !errors.Is(err, test.expectedErr) {
+				t.Errorf("Expected error %v, got %v", test.expectedErr, err)
+			}
+		})
 	}
 }
