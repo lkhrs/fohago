@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
+	"net/mail"
 	"strings"
 
 	"github.com/microcosm-cc/bluemonday"
@@ -29,7 +30,10 @@ func NewFormHandler(conf *Config) *FormHandler {
 }
 
 func (fh *FormHandler) handleFormSubmission(w http.ResponseWriter, r *http.Request) {
-	submission := fh.process(w, r)
+	submission, err := fh.process(w, r)
+	if err != nil {
+		return
+	}
 	if !fh.checkSpam(submission) {
 		http.Error(w, "Spam detected", http.StatusBadRequest)
 		return
@@ -62,7 +66,7 @@ func (fh *FormHandler) getClientIP(r *http.Request) string {
 }
 
 // process parses the form submission and returns a FormSubmission struct
-func (fh *FormHandler) process(w http.ResponseWriter, r *http.Request) FormSubmission {
+func (fh *FormHandler) process(w http.ResponseWriter, r *http.Request) (FormSubmission, error) {
 	id := r.URL.Path[1:]
 	formCfg, exists := fh.Config.Forms[id]
 	if !exists {
@@ -70,7 +74,7 @@ func (fh *FormHandler) process(w http.ResponseWriter, r *http.Request) FormSubmi
 	}
 
 	if err := r.ParseForm(); err != nil {
-		slog.Error("Failed to parse form:", slog.Any("error", err))
+		slog.Info("Failed to parse form submission:", slog.Any("error", err))
 		http.Error(w, "Failed to parse form", http.StatusUnprocessableEntity)
 	}
 
@@ -78,6 +82,18 @@ func (fh *FormHandler) process(w http.ResponseWriter, r *http.Request) FormSubmi
 	p := bluemonday.StrictPolicy()
 	for k, v := range r.Form {
 		fields[k] = p.Sanitize(v[0])
+	}
+
+	// validate email field
+	if formCfg.Fields.Email != "" {
+		email := fields[formCfg.Fields.Email]
+		e, err := mail.ParseAddress(email)
+		if err != nil {
+			slog.Info("Invalid email address:", slog.Any("error", err))
+			http.Error(w, "Invalid email address", http.StatusUnprocessableEntity)
+			return FormSubmission{}, err
+		}
+		fields[formCfg.Fields.Email] = e.Address
 	}
 
 	submission := FormSubmission{
@@ -89,7 +105,7 @@ func (fh *FormHandler) process(w http.ResponseWriter, r *http.Request) FormSubmi
 		Referrer:  r.Referer(),
 	}
 
-	return submission
+	return submission, nil
 }
 
 // sendMail sends the form submission as an email
