@@ -1,8 +1,11 @@
 package main
 
 import (
+	"errors"
 	"log/slog"
 	"os"
+
+	"github.com/lkhrs/fohago/antispam"
 )
 
 type ServiceLogger struct {
@@ -43,3 +46,29 @@ func AccessLogHandler() (logHandler slog.Handler) {
 	})
 	return
 }
+
+// logTurnstileFailure logs the reason for a Turnstile failure at the appropriate log level
+func logTurnstileFailure(err error) {
+    switch {
+    case errors.Is(err, antispam.ErrInvalidInputResponse),
+        errors.Is(err, antispam.ErrMissingInputResponse),
+        errors.Is(err, antispam.ErrValidationFailed):
+        slog.Info("Turnstile rejected submission", slog.Any("error", err))
+
+    case errors.Is(err, antispam.ErrMissingInputSecret):
+        slog.Error("Turnstile configuration error", slog.Any("error", err))
+
+    default:
+        var statusErr antispam.HTTPStatusError
+        if errors.As(err, &statusErr) {
+            slog.Warn("Turnstile API returned non-OK status",
+                slog.Int("status", statusErr.StatusCode),
+                slog.Any("error", err),
+            )
+            return
+        }
+
+        slog.Error("Turnstile check failed", slog.Any("error", err))
+    }
+}
+
